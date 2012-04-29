@@ -50,8 +50,8 @@ abstract class CoffeeScriptCompiler(log: Logger, libSrc: String, bare: Boolean, 
         "CoffeeScript.compile").toString)
     }
 
-  override lazy val scope = {
-    val sc = super.scope
+  override lazy val scope: ScriptableObject = {
+    val sc = createScope()
     evaluateChain(resourceStream, CoffeeScriptCompiler.ScriptName)
     sc
   }

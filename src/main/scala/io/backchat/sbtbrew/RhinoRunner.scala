@@ -19,7 +19,9 @@ class RhinoRunner(logger: Logger, charset: Charset, initialScope: ScriptableObje
   import RhinoRunner._
   private[this] var context: Context = null
 
-  lazy val scope = {
+  lazy val scope: ScriptableObject = createScope()
+
+  protected def createScope(): ScriptableObject = {
     enterContext()
     val localScope = context.initStandardObjects(initialScope).asInstanceOf[ScriptableObject]
     addCommonsScript(localScope)

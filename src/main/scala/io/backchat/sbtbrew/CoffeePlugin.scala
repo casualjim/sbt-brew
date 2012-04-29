@@ -2,11 +2,11 @@ package io.backchat.sbtbrew
 
 import coffeescript.{Vanilla, Iced}
 import sbt._
-import sbt.Keys._
 import sbt.Project.Initialize
 import scala.collection.JavaConversions._
 import java.nio.charset.Charset
 import java.io.File
+import sbt.Keys._
 
 object CoffeePlugin extends ScriptEnginePlugin {
 
@@ -51,18 +51,18 @@ object CoffeePlugin extends ScriptEnginePlugin {
 
 //  private def compileChanged( sources: File, target: File, incl: FileFilter, excl: FileFilter,
 //                              bare: Boolean, charset: Charset, iced: Boolean, log: Logger) =
-  private def compileChanged(context: ScriptEngineContext, bare: Boolean, charset: Charset, iced: Boolean, log: Logger) =
-    (for (coffee <- context.sourceDir.descendentsExcept(incl, excl).get;
+  private def compileChanged(context: ScriptEngineContext, bare: Boolean, iced: Boolean, log: Logger) =
+    (for (coffee <- context.sourceDir.descendentsExcept(context.includeFilter, context.excludeFilter).get;
           js <- translatePath(context, coffee)
           if (coffee newerThan js)) yield (coffee, js)) match {
       case Nil =>
         log.debug("No CoffeeScripts to compile")
-        compiled(target)
+        compiled(context.targetDir)
       case xs =>
-        log.info("Compiling %d CoffeeScripts to %s" format(xs.size, target))
+        log.info("Compiling %d CoffeeScripts to %s" format(xs.size, context.targetDir))
         xs map compileSources(bare, context.charset, iced, log)
         log.debug("Compiled %s CoffeeScripts" format xs.size)
-        compiled(target)
+        compiled(context.targetDir)
     }
 
   private def coffeeCleanTask =
@@ -97,7 +97,7 @@ object CoffeePlugin extends ScriptEnginePlugin {
     inConfig(c)(coffeeSettings0 ++ Seq(
       sourceDirectory in coffee <<= (sourceDirectory in c)(_ / "coffee"),
       resourceManaged in coffee <<= (resourceManaged in c)(_ / "js"),
-      engineContext in coffee <<= buildEngineContext
+      engineContext in coffee <<= buildEngineContext,
       cleanFiles in coffee <<= (resourceManaged in coffee)(_ :: Nil),
       watchSources in coffee <<= (unmanagedSources in coffee)
     )) ++ Seq(
@@ -116,7 +116,7 @@ object CoffeePlugin extends ScriptEnginePlugin {
     sourceExtensions in coffee <<= (iced in coffee)(ice => if (ice) Seq("coffee", "jade") else Seq("coffee")),
     targetExtension in coffee := "js",
     charset in coffee := Charset.forName("utf-8"),
-    includeFilter in coffee <<= (iced in coffee)((iced) => if (iced) "*.coffee" || "*.iced" else "*.coffee"),
+    includeFilter in coffee <<= (sourceExtensions in coffee)(_.map(f => ("*."+f): FileFilter).reduce(_ || _)),
     excludeFilter in coffee := (".*" - ".") || "_*" || HiddenFileFilter,
     unmanagedSources in coffee <<= coffeeSourcesTask,
     clean in coffee <<= coffeeCleanTask,
