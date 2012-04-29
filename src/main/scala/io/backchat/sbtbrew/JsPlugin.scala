@@ -18,7 +18,7 @@
 //    val charset = SettingKey[Charset]("charset", "Sets the character encoding used in Javascript files (default utf-8)")
 //    val brew = TaskKey[Seq[File]]("brew", "Compile and optimize script source files")
 ////    val bare = SettingKey[Boolean]("compile-option", "Compile coffee sources without top-level function wrapper.")
-////    val engine = SettingKey[Compiler]("compilers", "The registered compilers (default icedcoffee, coffeejade, haml, js)")
+////    val engine = SettingKey[ScriptEngine]("compilers", "The registered compilers (default icedcoffee, coffeejade, haml, js)")
 //    val optimizer = SettingKey[Optimizer]("optimizer", "The optimizer to use")
 //    val coffee = TaskKey[Seq[File]]("coffee", "Compile coffee sources.")
 //  }

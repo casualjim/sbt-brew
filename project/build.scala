@@ -7,7 +7,7 @@ object BrewBuild extends Build {
 
   val defaultSettings = Project.defaultSettings ++ scriptedSettings ++ Seq(
     sbtPlugin := true,
-    organization := "io.backchat",
+    organization := "io.backchat.sbtbrew",
     version := "0.1-SNAPSHOT",
     scalaVersion := "2.9.1",
     publishMavenStyle := false,

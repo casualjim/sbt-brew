@@ -1,6 +1,6 @@
 package io.backchat.sbtbrew
 
-import coffeescript.{Vanilla, Iced}
+//import coffeescript.{Vanilla, Iced}
 import sbt._
 import sbt.Project.Initialize
 import scala.collection.JavaConversions._
@@ -8,7 +8,7 @@ import java.nio.charset.Charset
 import java.io.File
 import sbt.Keys._
 
-object CoffeePlugin extends ScriptEnginePlugin {
+object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
 
   import BrewPlugin.BrewKeys._
   import ScriptEngineKeys.engineContext
@@ -21,36 +21,35 @@ object CoffeePlugin extends ScriptEnginePlugin {
 
   }
 
-
-
   private def javascript(sources: File, coffee: File, targetDir: File) =
     Some(new File(targetDir, IO.relativize(sources, coffee).get.replace(".coffee", ".js").replace(".iced", ".js")))
 
-  private def compileSources(bare: Boolean, charset: Charset, iced: Boolean, log: Logger)(pair: (File, File)) =
+  private def compileSources(bare: Boolean, charset: Charset, iced: Boolean, log: Logger)(pair: (File, File)) = {
+    val compiler = if (iced) Iced(bare, log) else Vanilla(bare, log)
     try {
       val (coffee, js) = pair
       log.debug("Compiling %s" format coffee)
-      val compiler = if (iced) new Iced(log, bare) else new Vanilla(log, bare)
-      compiler.compile(scala.io.Source.fromFile(coffee)(scala.io.Codec(charset)).mkString).fold({
-        err => sys.error(err)
-      }, {
-        compiled =>
+
+      val code = scala.io.Source.fromFile(coffee)(scala.io.Codec(charset)).mkString
+       compiler.compile(code).fold(
+        err => sys.error(err),
+        compiled => {
           IO.write(js, compiled)
           log.debug("Wrote to file %s" format js)
           js
-      })
+        })
+
     } catch {
       case e: Exception =>
         throw new RuntimeException(
           "error occured while compiling %s with %s: %s" format(
-            pair._1, if (iced) "Iced" else "Vanilla", e.getMessage), e
+            pair._1, compiler, e.getMessage), e
         )
     }
+  }
 
   private def compiled(under: File) = (under ** "*.js").get
 
-//  private def compileChanged( sources: File, target: File, incl: FileFilter, excl: FileFilter,
-//                              bare: Boolean, charset: Charset, iced: Boolean, log: Logger) =
   private def compileChanged(context: ScriptEngineContext, bare: Boolean, iced: Boolean, log: Logger) =
     (for (coffee <- context.sourceDir.descendentsExcept(context.includeFilter, context.excludeFilter).get;
           js <- translatePath(context, coffee)

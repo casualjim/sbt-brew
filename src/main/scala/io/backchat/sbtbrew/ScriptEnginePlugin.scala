@@ -11,7 +11,7 @@ case class ScriptEngineContext(
     charset: Charset,
     includeFilter: FileFilter,
     excludeFilter: FileFilter)
-trait ScriptEnginePlugin extends sbt.Plugin {
+trait ScriptEnginePlugin { self: sbt.Plugin =>
 
   object ScriptEngineKeys {
     val engineContext = TaskKey[ScriptEngineContext]("engine-context", "The configuration for this script engine to compile files")
