@@ -33,7 +33,7 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
 
   private def compiled(under: File) = (under ** "*.js").get
 
-  private def compileChanged(context: ScriptEngineContext, bare: Boolean, iced: Boolean, log: Logger) =
+  private def compileChanged(context: ScriptEngineContext, bare: Boolean, iced: Boolean, log: Logger) = 
     (for {
       coffee <- context.sourceDir.descendentsExcept(context.includeFilter, context.excludeFilter).get
       js <- translatePath(context, coffee) if coffee newerThan js }  yield (coffee, js)) match {
@@ -69,7 +69,7 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
 
   private def buildEngineContext = {
     (sourceDirectory in coffee, resourceManaged in coffee, includeFilter in coffee, excludeFilter in coffee,
-      charset in coffee, sourceExtensions in coffee, targetExtension in coffee) map {
+      charset in coffee, sourceExtensions in coffee, targetExtension in coffee) {
       (sourceDir, targetDir, incl, excl, charset, sourceExts, targetExt) =>
         ScriptEngineContext(sourceExts, targetExt, sourceDir, targetDir, charset, incl, excl)
     }
@@ -95,7 +95,7 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
   def coffeeSettings0: Seq[Setting[_]] = Seq(
     bare in coffee := false,
     iced in coffee := false,
-    sourceExtensions in coffee <<= (iced in coffee)(ice => if (ice) Seq("coffee", "jade") else Seq("coffee")),
+    sourceExtensions in coffee <<= (iced in coffee)(ice => if (ice) Seq("coffee", "iced") else Seq("coffee")),
     targetExtension in coffee := "js",
     charset in coffee := Charset.forName("utf-8"),
     includeFilter in coffee <<= (sourceExtensions in coffee)(_.map(f => ("*."+f): FileFilter).reduce(_ || _)),
