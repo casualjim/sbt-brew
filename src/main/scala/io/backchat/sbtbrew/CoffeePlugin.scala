@@ -18,7 +18,6 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
     val coffee = TaskKey[Seq[File]]("coffee", "Compile coffee sources.")
     val bare = SettingKey[Boolean]("bare", "Compile coffee sources without top-level function wrapper.")
     val iced = SettingKey[Boolean]("iced", """When true, The coffee task will compile vanilla CoffeeScript and "Iced" CoffeeScript sources""")
-
   }
 
   private def javascript(sources: File, coffee: File, targetDir: File) =
@@ -29,9 +28,7 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
     try {
       val (coffee, js) = pair
       log.debug("Compiling %s" format coffee)
-
-      val code = scala.io.Source.fromFile(coffee)(scala.io.Codec(charset)).mkString
-       compiler.compile(code).fold(
+      compiler.compile(IO.read(coffee, charset)).fold(
         err => sys.error(err),
         compiled => {
           IO.write(js, compiled)
@@ -51,9 +48,9 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
   private def compiled(under: File) = (under ** "*.js").get
 
   private def compileChanged(context: ScriptEngineContext, bare: Boolean, iced: Boolean, log: Logger) =
-    (for (coffee <- context.sourceDir.descendentsExcept(context.includeFilter, context.excludeFilter).get;
-          js <- translatePath(context, coffee)
-          if (coffee newerThan js)) yield (coffee, js)) match {
+    (for {
+      coffee <- context.sourceDir.descendentsExcept(context.includeFilter, context.excludeFilter).get
+      js <- translatePath(context, coffee) if coffee newerThan js }  yield (coffee, js)) match {
       case Nil =>
         log.debug("No CoffeeScripts to compile")
         compiled(context.targetDir)
