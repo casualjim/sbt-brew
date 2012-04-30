@@ -1,9 +1,6 @@
 package io.backchat.sbtbrew
 
-//import coffeescript.{Vanilla, Iced}
 import sbt._
-import sbt.Project.Initialize
-import scala.collection.JavaConversions._
 import java.nio.charset.Charset
 import java.io.File
 import sbt.Keys._
@@ -11,17 +8,6 @@ import sbt.Keys._
 object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
 
   import BrewPlugin.BrewKeys._
-  import ScriptEngineKeys.engineContext
-  import CoffeeKeys._
-
-  object CoffeeKeys {
-    val coffee = TaskKey[Seq[File]]("coffee", "Compile coffee sources.")
-    val bare = SettingKey[Boolean]("bare", "Compile coffee sources without top-level function wrapper.")
-    val iced = SettingKey[Boolean]("iced", """When true, The coffee task will compile vanilla CoffeeScript and "Iced" CoffeeScript sources""")
-  }
-
-  private def javascript(sources: File, coffee: File, targetDir: File) =
-    Some(new File(targetDir, IO.relativize(sources, coffee).get.replace(".coffee", ".js").replace(".iced", ".js")))
 
   private def compileSources(bare: Boolean, charset: Charset, iced: Boolean, log: Logger)(pair: (File, File)) = {
     val compiler = if (iced) Iced(bare, log) else Vanilla(bare, log)

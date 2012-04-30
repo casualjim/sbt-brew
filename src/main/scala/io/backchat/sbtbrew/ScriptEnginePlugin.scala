@@ -13,9 +13,6 @@ case class ScriptEngineContext(
     excludeFilter: FileFilter)
 trait ScriptEnginePlugin { self: sbt.Plugin =>
 
-  object ScriptEngineKeys {
-    val engineContext = TaskKey[ScriptEngineContext]("engine-context", "The configuration for this script engine to compile files")
-  }
   protected def translatePath(context: ScriptEngineContext, coffee: File) = {
     IO.relativize(context.sourceDir, coffee) map { relative =>
       new File(context.targetDir, context.sourceExtensions.foldLeft(relative){ (p, ext) => p.replace(ext, context.targetExtension) })

@@ -11,3 +11,5 @@ resolvers ++= Seq(
   "coda" at "http://repo.codahale.com")
 
 addSbtPlugin("me.lessis" % "ls-sbt" % "0.1.1")
+
+addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.0.10")
