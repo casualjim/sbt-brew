@@ -12,7 +12,7 @@ class CoffeeJadeScriptEngine(options: String, iced: Boolean, log: Logger) extend
   import ScriptEngine._
   import CoffeeJadeScriptEngine._
 
-  private def coffeeCompiler = if (iced) Iced(false, log) else Vanilla(false, log)
+  private val coffeeCompiler = if (iced) Iced(false, log) else Vanilla(false, log)
 
   def compile(scriptToCompile: String) = {
     withContext { ctx =>
