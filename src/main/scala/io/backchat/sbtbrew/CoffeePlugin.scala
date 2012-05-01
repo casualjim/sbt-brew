@@ -2,7 +2,6 @@ package io.backchat.sbtbrew
 
 import sbt._
 import java.nio.charset.Charset
-import java.io.File
 import sbt.Keys._
 
 object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {

@@ -14,6 +14,7 @@ object BrewPlugin extends sbt.Plugin {
     
     val brew = TaskKey[Seq[File]]("brew", "Compile and optimize script source files.")
     val coffee = TaskKey[Seq[File]]("coffee", "Compile coffee sources.")
+    val coffeeJade = TaskKey[Seq[File]]("coffee-jade", "Compile the jade views with coffee jade")
     val optimize = TaskKey[Seq[File]]("optimize", "Optimize the web resources.")
     val optimizer = SettingKey[Optimizer]("optimizer", "The optimizer to use.")
     val engineContext = SettingKey[ScriptEngineContext]("engine-context", "The configuration for this script engine to compile files.")
@@ -22,6 +23,6 @@ object BrewPlugin extends sbt.Plugin {
     val iced = SettingKey[Boolean]("iced", """When true, The coffee task will compile vanilla CoffeeScript and "Iced" CoffeeScript sources.""")
     
     val viewsMapOutputFile = SettingKey[Option[File]]("view-map-output-file", "The single JS file containing all the Jade templates in a map")
-    val coffeeJade = TaskKey[Seq[File]]("coffee-jade", "Compile the jade views with coffee jade")
+    val jadeOptions = SettingKey[String]("jade-options", "Compiler options for the jade compiler.")
   }
 }

@@ -12,7 +12,7 @@ class CoffeeJadeScriptEngine(options: String, log: Logger) extends ScriptEngine 
   import ScriptEngine._
   import CoffeeJadeScriptEngine._
 
-  private val coffeeCompiler = Vanilla(true, log)
+  private val coffeeCompiler = Vanilla(false, log)
 
   def compile(scriptToCompile: String) = {
     withContext { ctx =>
@@ -29,6 +29,9 @@ class CoffeeJadeScriptEngine(options: String, log: Logger) extends ScriptEngine 
 
   lazy val scope = withContext { ctx =>
     val ns = createScope(ctx)
+    ctx.evaluateReader(
+      ns,
+      new InputStreamReader(getClass.getResourceAsStream("/coffeescript/vanilla/coffee-script.js"), utf8), "coffee-script", 1, null)
     ctx.evaluateString(ns, "var window = {};", "JCoffeeJadeCompiler", 0, null)
     ctx.evaluateReader(
       ns,
