@@ -3,6 +3,7 @@ package io.backchat.sbtbrew
 import sbt._
 import Keys._
 import java.nio.charset.Charset
+import java.io.{FileOutputStream, OutputStreamWriter, BufferedWriter, PrintWriter}
 
 case class ScriptEngineContext(
     sourceExtensions: Seq[String],
@@ -21,6 +22,11 @@ trait ScriptEnginePlugin { self: sbt.Plugin =>
       new File(context.targetDir, context.sourceExtensions.foldLeft(relative){ (p, ext) => p.replace(ext, context.targetExtension) })
     }
   }
+
+  protected def printWriter(charset: Charset) = 
+    Using.file(f => 
+             new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f, false), charset))))
+
 
   protected def compileChanged(context: ScriptEngineContext, log: Logger)(handler: PartialFunction[Seq[(File, File)], Seq[File]]): Seq[File] = {
     val r = for {

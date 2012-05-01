@@ -3,7 +3,6 @@ package io.backchat.sbtbrew
 import sbt._
 import Keys._
 import java.nio.charset.Charset
-import java.io.{FileOutputStream, OutputStreamWriter, BufferedWriter, PrintWriter}
 
 object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
   import BrewPlugin.BrewKeys._
@@ -29,10 +28,6 @@ object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
         )
     }
   }
-
-  private def printWriter(charset: Charset) = 
-    Using.file(f => 
-             new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f, false), charset))))
   
   private def compileChangedJade(context: ScriptEngineContext, viewsMapFile: Option[File], options: String, log: Logger) = 
     compileChanged(context, log) {
