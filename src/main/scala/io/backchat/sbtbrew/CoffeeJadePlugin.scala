@@ -52,7 +52,7 @@ object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
             out.println("  templates = {};")
             jadeViews foreach { case (viewPath, content) => 
               IO.relativize(context.targetDir, viewPath) foreach { vw => 
-                out.println("  templates['%s'] = %s".format(vw, content))
+                out.println("  templates['%s'] = %s".format(vw, content.split("\n").drop(1).mkString("\n")))
               }
             } 
             out.println("  return templates;")

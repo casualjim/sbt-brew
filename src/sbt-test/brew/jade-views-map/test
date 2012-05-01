@@ -1,0 +1,4 @@
+# should generate javascript
+> coffee-jade
+$ exists target/scala-2.9.1/resource_managed/main/js/jade.js
+> contents target/scala-2.9.1/resource_managed/main/js/jade.js fixtures/index.js
