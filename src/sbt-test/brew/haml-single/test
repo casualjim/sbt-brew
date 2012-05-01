@@ -1,0 +1,4 @@
+# should generate javascript
+> haml
+$ exists target/scala-2.9.1/resource_managed/main/js/index.js
+> contents target/scala-2.9.1/resource_managed/main/js/index.js fixtures/index.js

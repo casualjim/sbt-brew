@@ -14,6 +14,7 @@ object BrewPlugin extends sbt.Plugin {
     
     val brew = TaskKey[Seq[File]]("brew", "Compile and optimize script source files.")
     val coffee = TaskKey[Seq[File]]("coffee", "Compile coffee sources.")
+    val haml = TaskKey[Seq[File]]("haml", "Compile haml sources.")
     val coffeeJade = TaskKey[Seq[File]]("coffee-jade", "Compile the jade views with coffee jade")
     val optimize = TaskKey[Seq[File]]("optimize", "Optimize the web resources.")
     val optimizer = SettingKey[Optimizer]("optimizer", "The optimizer to use.")

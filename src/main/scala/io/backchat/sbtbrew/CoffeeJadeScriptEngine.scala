@@ -18,10 +18,13 @@ class CoffeeJadeScriptEngine(options: String, bare: Boolean, log: Logger) extend
     withContext { ctx =>
       val compileScope = ctx.newObject(scope)
       compileScope.setParentScope(scope)
-      compileScope.put("jadeSource", compileScope, scriptToCompile)
+
       catchRhinoExceptions {
-        val script = "window.jade.compile(jadeSource, %s).code;" format options
-        val coffee = ctx.evaluateString(compileScope, script, "JCoffeeJadeCompiler", 0, null).toString
+        val coffee = evalString(
+          "window.jade.compile(jadeSource, opts).code;",
+          "JCoffeeJadeCompiler",
+          "jadeSource" -> scriptToCompile,
+          "opts" -> options)
         coffeeCompiler.compile(coffee)
       }
     }

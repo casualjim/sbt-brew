@@ -1,4 +1,4 @@
-package io.backchat.brewsbt;
+package io.backchat.sbtbrew;
 
 import org.mozilla.javascript.*;
 

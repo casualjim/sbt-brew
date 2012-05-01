@@ -4,7 +4,7 @@
 //import org.mozilla.javascript.tools.ToolErrorReporter
 //import java.io._
 //import java.nio.charset.Charset
-//import io.backchat.brewsbt.RhinoUtils
+//import io.backchat.sbtbrew.RhinoUtils
 //import org.mozilla.javascript.{RhinoException, JavaScriptException, Context, ScriptableObject}
 //
 //
