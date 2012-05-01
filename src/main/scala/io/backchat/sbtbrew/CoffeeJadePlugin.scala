@@ -3,21 +3,22 @@ package io.backchat.sbtbrew
 import sbt._
 import Keys._
 import java.nio.charset.Charset
+import java.io.{FileOutputStream, OutputStreamWriter, BufferedWriter, PrintWriter}
 
 object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
   import BrewPlugin.BrewKeys._
 
-  private def compileSources(charset: Charset, options: String, log: Logger)(pair: (File, File)) = {
-    val compiler = new CoffeeJadeScriptEngine(options, log)
+  private def compileSources(charset: Charset, bare: Boolean, options: String, log: Logger)(pair: (File, File)) = {
+    val compiler = new CoffeeJadeScriptEngine(options, bare, log)
     try {
       val (coffeeJade, js) = pair
       log.debug("Compiling %s" format coffeeJade)
       compiler.compile(IO.read(coffeeJade, charset)).fold(
         err => sys.error(err),
         compiled => {
-          IO.write(js, compiled)
+          if (!bare) IO.write(js, compiled)
           log.debug("Wrote to file %s" format js)
-          js
+          (js, compiled)
         })
 
     } catch {
@@ -28,28 +29,49 @@ object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
         )
     }
   }
+
+  private def printWriter(charset: Charset) = 
+    Using.file(f => 
+             new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f, false), charset))))
   
-  private def compileChangedJade(context: ScriptEngineContext, options: String, log: Logger) = 
+  private def compileChangedJade(context: ScriptEngineContext, viewsMapFile: Option[File], options: String, log: Logger) = 
     compileChanged(context, log) {
       case Nil =>
         log.debug("No jade templates to compile")
         compiled(context.targetDir, context.targetExtension)
       case xs =>
         log.info("Compiling %d jade templates to %s" format(xs.size, context.targetDir))
-        xs map compileSources(context.charset, options, log)
+        val jadeViews = xs map compileSources(context.charset, viewsMapFile.isDefined, options, log)
         log.debug("Compiled %s jade templates" format xs.size)
-        compiled(context.targetDir, context.targetExtension)    
+        if (viewsMapFile.isDefined) {
+          val outputFile = viewsMapFile.get
+          outputFile.getParentFile.mkdirs()
+          printWriter(context.charset)(outputFile) { out =>
+            out.println("define(['frameworks'], function() {")
+            out.println("  var templates;")
+            out.println("  templates = {};")
+            jadeViews foreach { case (viewPath, content) => 
+              IO.relativize(context.targetDir, viewPath) foreach { vw => 
+                out.println("  templates['%s'] = %s".format(vw, content))
+              }
+            } 
+            out.println("  return templates;")
+            out.println("});")
+          }
+          Seq(outputFile)
+        } else compiled(context.targetDir, context.targetExtension)
     }
 
   private def coffeeJadeCompilerTask =
-    (engineContext in coffeeJade, jadeOptions in coffeeJade, streams) map { (ctx, jo, out) =>
-      compileChangedJade(ctx, jo, out.log)
+    (engineContext in coffeeJade, viewsFile in coffeeJade, jadeOptions in coffeeJade, streams) map { (ctx, vf, jo, out) =>
+      compileChangedJade(ctx, vf, jo, out.log)
   }
 
   def coffeeJadeSettingsIn(c: Configuration): Seq[Setting[_]] =
     inConfig(c)(coffeeJadeSettings0 ++ Seq(
       sourceDirectory in coffeeJade <<= (sourceDirectory in (c, coffee))(_ / "views"),
       resourceManaged in coffeeJade <<= (resourceManaged in (c, coffee))(_ / "views"),
+      viewsFile in coffeeJade <<= (resourceManaged in (c, coffeeJade))(d => Some(d / "jade.js")),
       engineContext in coffeeJade <<= buildEngineContext(coffeeJade),
       cleanFiles in coffeeJade <<= (resourceManaged in coffeeJade)(_ :: Nil),
       watchSources in coffeeJade <<= (unmanagedSources in coffeeJade)

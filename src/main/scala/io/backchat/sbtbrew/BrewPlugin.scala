@@ -22,7 +22,7 @@ object BrewPlugin extends sbt.Plugin {
     val bare = SettingKey[Boolean]("bare", "Compile coffee sources without top-level function wrapper.")
     val iced = SettingKey[Boolean]("iced", """When true, The coffee task will compile vanilla CoffeeScript and "Iced" CoffeeScript sources.""")
     
-    val viewsMapOutputFile = SettingKey[Option[File]]("view-map-output-file", "The single JS file containing all the Jade templates in a map")
+    val viewsFile = SettingKey[Option[File]]("views-file", "The single JS file containing all the Jade templates in a map")
     val jadeOptions = SettingKey[String]("jade-options", "Compiler options for the jade compiler.")
   }
 }

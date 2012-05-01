@@ -7,12 +7,12 @@ object CoffeeJadeScriptEngine {
   val CoffeeJadeScriptName = "coffeejade.js"
   val CoffeeJadeScriptResource = "/coffeejade/"+CoffeeJadeScriptName
 }
-class CoffeeJadeScriptEngine(options: String, log: Logger) extends ScriptEngine {
+class CoffeeJadeScriptEngine(options: String, bare: Boolean, log: Logger) extends ScriptEngine {
 
   import ScriptEngine._
   import CoffeeJadeScriptEngine._
 
-  private val coffeeCompiler = Vanilla(false, log)
+  private[this] val coffeeCompiler = Vanilla(bare, log)
 
   def compile(scriptToCompile: String) = {
     withContext { ctx =>

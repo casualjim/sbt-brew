@@ -4,6 +4,8 @@ sourceDirectory in (Compile, BrewKeys.coffeeJade) <<= (sourceDirectory in (Compi
 
 resourceManaged in (Compile, BrewKeys.coffeeJade) <<= (resourceManaged in (Compile, BrewKeys.coffee))
 
+BrewKeys.viewsFile in (Compile, BrewKeys.coffeeJade) := None
+
 InputKey[Unit]("contents") <<= inputTask { (argsTask: TaskKey[Seq[String]]) =>
   (argsTask, streams) map {
     (args, out) =>
