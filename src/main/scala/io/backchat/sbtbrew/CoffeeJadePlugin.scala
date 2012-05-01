@@ -17,7 +17,7 @@ object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
         compiled => {
           if (!bare) IO.write(js, compiled)
           log.debug("Wrote to file %s" format js)
-          (js, compiled)
+          (coffeeJade, js, compiled)
         })
 
     } catch {
@@ -45,8 +45,8 @@ object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
             out.println("define(['frameworks'], function() {")
             out.println("  var templates;")
             out.println("  templates = {};")
-            jadeViews foreach { case (viewPath, content) => 
-              IO.relativize(context.targetDir, viewPath) foreach { vw => 
+            jadeViews foreach { case (sourcePath, viewPath, content) => 
+              IO.relativize(context.sourceDir, sourcePath) foreach { vw => 
                 out.println("  templates['%s'] = %s".format(vw, content.split("\n").drop(1).mkString("\n")))
               }
             } 

@@ -1,7 +1,7 @@
 define(['frameworks'], function() {
   var templates;
   templates = {};
-  templates['index.js'] = (function(locals) {
+  templates['index.jade'] = (function(locals) {
   var __;
   __ = jade.init();
   with (locals || {}) {;

@@ -13,7 +13,7 @@ object Optimizer {
 class Optimizer {
 
   import Optimizer._
-  private val buildScript = File.createTempFile("build", "brew-js")
+  private val buildScript = File.createTempFile("build", "js")
   copyFromClassPathToFilesystem(BuildScriptClasspathFilename, buildScript)
   buildScript.deleteOnExit()
 
