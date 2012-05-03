@@ -51,8 +51,8 @@ object HamlPlugin extends sbt.Plugin with ScriptEnginePlugin {
 
   def hamlSettingsIn(c: Configuration): Seq[Setting[_]] =
     inConfig(c)(hamlSettings0 ++ Seq(
-      sourceDirectory in haml <<= (sourceDirectory in c)(_ / "views"),
-      resourceManaged in haml <<= (resourceManaged in c)(_ / "views"),
+      sourceDirectory in haml <<= (sourceDirectory in (c, coffee))(_ / "views"),
+      resourceManaged in haml <<= (resourceManaged in (c, coffee))(_ / "views"),
       engineContext in haml <<= buildEngineContext(haml),
       cleanFiles in haml <<= (resourceManaged in haml)(_ :: Nil),
       watchSources in haml <<= (unmanagedSources in haml)
@@ -66,12 +66,7 @@ object HamlPlugin extends sbt.Plugin with ScriptEnginePlugin {
   def hamlSettings: Seq[Setting[_]] =
     hamlSettingsIn(Compile) ++ hamlSettingsIn(Test)
 
-  def hamlSettings0: Seq[Setting[_]] = Seq(
-    bare in haml := false,
-    iced in haml := false,
-    sourceExtensions in haml <<= (iced in haml)(ice => if (ice) Seq("haml", "iced") else Seq("haml"))) ++
-    taskSettings(haml) ++ Seq(
-    haml <<= hamlCompilerTask
-  )
+  def hamlSettings0: Seq[Setting[_]] =
+    Seq(sourceExtensions in haml := Seq("haml")) ++ taskSettings(haml) ++ Seq(haml <<= hamlCompilerTask)
 }
 

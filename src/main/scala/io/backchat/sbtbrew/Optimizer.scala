@@ -8,6 +8,7 @@ import java.io.{InputStream, FileOutputStream, File}
 object Optimizer {
   private val RequirePlugins = Seq("i18n.js", "order.js", "text.js", "domReady.js")
   private val BuildScriptClasspathFilename = "/r.js"
+
 }
 
 class Optimizer {
@@ -16,6 +17,8 @@ class Optimizer {
   private val buildScript = File.createTempFile("build", "js")
   copyFromClassPathToFilesystem(BuildScriptClasspathFilename, buildScript)
   buildScript.deleteOnExit()
+
+
 
   private def copyFromClassPathToFilesystem(classpathFilename: String, outputFile: File): File = {
     Using.fileOutputStream()(outputFile) { output =>

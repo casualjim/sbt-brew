@@ -67,7 +67,7 @@ object CoffeePlugin extends sbt.Plugin with ScriptEnginePlugin {
     coffeeSettingsIn(Compile) ++ coffeeSettingsIn(Test)
 
   def coffeeSettings0: Seq[Setting[_]] = Seq(
-    bare in coffee := false,
+    bare in coffee := true,
     iced in coffee := false,
     sourceExtensions in coffee <<= (iced in coffee)(ice => if (ice) Seq("coffee", "iced") else Seq("coffee"))) ++
     taskSettings(coffee) ++ Seq(

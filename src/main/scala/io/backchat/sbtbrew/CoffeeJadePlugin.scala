@@ -78,7 +78,7 @@ object CoffeeJadePlugin extends sbt.Plugin with ScriptEnginePlugin {
     )
 
   def coffeeJadeSettings: Seq[Setting[_]] =
-     CoffeePlugin.coffeeSettings ++ coffeeJadeSettingsIn(Compile) ++ coffeeJadeSettingsIn(Test)
+     coffeeJadeSettingsIn(Compile) ++ coffeeJadeSettingsIn(Test)
 
   def coffeeJadeSettings0: Seq[Setting[_]] = Seq(
     jadeOptions in coffeeJade := "{}",
