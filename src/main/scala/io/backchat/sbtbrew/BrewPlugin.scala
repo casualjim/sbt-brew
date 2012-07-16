@@ -11,9 +11,10 @@ import JsonDSL._
  *  The config for RequireJS
  */
 class RequireJsContext(val baseUrl: String, val dir: File) {
+  var mainConfigFile: String = null
   var locale: String = "en-us"
   var optimize: String = "uglify"
-  var optimizeCss: String = "standard"
+  var optimizeCss: String = "standard" 
   var requireUrl: String = "require.js"
   var inlineText: Boolean = true
   var useStrict: Boolean = false
@@ -21,6 +22,7 @@ class RequireJsContext(val baseUrl: String, val dir: File) {
   var skipPragmas: Boolean = false
   var ccsImportIgnore: Seq[String] = Nil
   var isSkipModuleInsertion: Boolean = false
+  var stubModules: Seq[String] = Nil
   var modules: Seq[RequireJsModule] = Nil
   var paths: Map[String, String] = Map.empty
   var packagePaths: Map[String, Seq[String]] = Map.empty
@@ -34,12 +36,26 @@ class RequireJsContext(val baseUrl: String, val dir: File) {
   var hasOnSave: Map[String, Boolean] = Map.empty
   var namespace: String = null
   var isOptimizeAllPluginResources: Boolean = false
+  var appDir: String = "./application"
+  var findNestedDependencies: Boolean = false
+  var removeCombined: Boolean = false
+  var name: String = null
+  var include: Seq[String] = Nil
+  var includeRequire: Boolean = false
+  var exclude: List[String] = Nil
+  var excludeShallow: List[String] = Nil
+  var fileExclusionRegexp: String = "^\\."
+  var preserveLicenseComments: Boolean = true
+  var logLevel: Int = 0
+  var onBuildRead: String = null
+  var onBuildWrite: String = null
 
   implicit val formats: Formats = DefaultFormats
 
   def toJValue: JObject = {   
     ("baseUrl"                      -> baseUrl) ~
     ("dir"                          -> dir.getAbsolutePath) ~
+    ("mainConfigFile"               -> mainConfigFile ) ~
     ("locale"                       -> locale) ~
     ("optimize"                     -> optimize) ~
     ("optimizeCss"                  -> optimizeCss) ~
@@ -49,7 +65,8 @@ class RequireJsContext(val baseUrl: String, val dir: File) {
     ("pragmas"                      -> pragmas) ~
     ("skipPragmas"                  -> skipPragmas) ~
     ("ccsImportIgnore"              -> ccsImportIgnore) ~    
-    ("isSkipModuleInsertion"        -> isSkipModuleInsertion) ~
+    ("skipModuleInsertion"          -> isSkipModuleInsertion) ~
+    ("stubModules"                  -> stubModules) ~
     ("modules"                      -> JArray(modules.toList map (Extraction.decompose(_)))) ~
     ("paths"                        -> paths) ~
     ("packagePaths"                 -> packagePaths) ~
@@ -62,16 +79,32 @@ class RequireJsContext(val baseUrl: String, val dir: File) {
     ("has"                          -> has) ~
     ("hasOnSave"                    -> hasOnSave) ~
     ("namespace"                    -> namespace) ~
-    ("isOptimizeAllPluginResources" -> isOptimizeAllPluginResources)
-}
+    ("optimizeAllPluginResources"   -> isOptimizeAllPluginResources) ~
+    ("findNestedDependencies"       -> findNestedDependencies) ~
+    ("removeCombined"               -> removeCombined) ~
+    ("name"                         -> name) ~
+    ("include"                      -> include) ~
+    ("includeRequire"               -> includeRequire) ~
+    ("exclude"                      -> exclude) ~
+    ("excludeShallow"               -> excludeShallow) 
+  }
 
 }
 case class RequireJsModule(name: String, includeRequire: Boolean = false, include: List[String] = Nil, exclude: List[String] = Nil, excludeShallow: List[String] = Nil, `override`: JObject = JObject(Nil))
 case class Uglify(
-             gen_options: Map[String, String] = Map.empty,
-             strict_semicolons: Map[String, String] = Map.empty,
-             mangle_options: Map[String, String] = Map.empty,
-             squeeze_options: Map[String, String] = Map.empty)
+             strict_semicolons: Boolean = false,
+             toplevel: Boolean = false, 
+             except: Array[String] = Array.empty, 
+             defines: Map[String, Any] = Map.empty,
+             make_seqs: Boolean = true,
+             dead_code: Boolean = true,
+             beautify: Boolean = false,
+             indent_start: Int = 0,
+             indent_level: Int = 2,
+             quote_keys: Boolean = false,
+             space_colon: Boolean = false,
+             ascii_only: Boolean = false,
+             inline_script: Boolean = false)
 case class Closure(compilationLevel: String, loggingLevel: String, compilerOptions: Map[String, String] = Map.empty)
 case class Wrap(start: String, end: String, startFile: String, endFile: String)
 object BrewPlugin extends sbt.Plugin {

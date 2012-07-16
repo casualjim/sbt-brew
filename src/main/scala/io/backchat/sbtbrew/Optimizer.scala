@@ -6,7 +6,7 @@ import java.io.{InputStream, FileOutputStream, File}
 
 
 object Optimizer {
-  private val RequirePlugins = Seq("i18n.js", "order.js", "text.js", "domReady.js")
+  private val RequirePlugins = Seq("i18n.js", "cs.js", "text.js", "domReady.js")
   private val BuildScriptClasspathFilename = "/r.js"
 
 }
